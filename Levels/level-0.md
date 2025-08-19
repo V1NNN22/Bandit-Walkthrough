@@ -28,9 +28,6 @@ Learn how to connect to the Bandit server using SSH (Secure Shell).
 ```
 4. If the connection is successful, you will be logged in as bandit0.
 
-## **Screenshot Placement**
-
-\[Insert Screenshot: Successful SSH login to Bandit server]
 
 ## **Outcome**
 
