@@ -6,7 +6,7 @@
 # Date: 21-08-2025  
 
 ## Objective  
-Retrieve the password for bandit11, which is stored in the file `data.txt`. The hint specifies that the file’s contents are encoded in Base64.  
+Retrieve the password for bandit11, which is stored in the file `data.txt`. The hint specifies that the file’s contents are encoded in ""Base64".  
 ```
 
 ## **Steps to Solve**
