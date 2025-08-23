@@ -1,66 +1,105 @@
 ```markdown
 # Written by: VINOD .N. RATHOD  
 
-# Bandit Walkthrough — Level 21 → Level 22  
+# Bandit Walkthrough — Level 20 → Level 21  
 
 # Date: 23-08-2025  
 
 ## Objective  
-Retrieve the password for bandit22 by examining scheduled "cron jobs" that run under the "bandit22" user.  
+Retrieve the password for bandit21 by exploiting a "setuid binary" (`suconnect`) that connects to a local port and verifies the current level’s password.  
 ```
 
 ## **Steps to Solve**
 
-1. After logging in as **bandit21**, navigate to the cron jobs directory:
+### Step 1 — Explore the Directory
+
+1. After logging in as **bandit20**, list the available files:
 
 ```bash
-   cd /etc/cron.d/
    ls
 ```
 
-You will see a file named `cronjob_bandit22`.
+You will find a binary named:
 
-2. View the contents of this cron job file:
-
-```bash
-   cat cronjob_bandit22
+```
+suconnect
 ```
 
-It shows that a script `/usr/bin/cronjob_bandit22.sh` is executed periodically.
-
-3. Read the script to see what it does:
+2. Run it without parameters to see usage:
 
 ```bash
-   cat /usr/bin/cronjob_bandit22.sh
+   ./suconnect
 ```
 
-The script writes the password for **bandit22** into a file inside `/tmp`.
+Output:
 
-4. Read the file created by the script:
+```
+Usage: ./suconnect <port>
+```
+
+→ It expects a port number to connect to.
+
+---
+
+### Step 2 — Prepare Two Sessions
+
+Because `suconnect` connects to a local port, we need **two terminal sessions**:
+
+* **Session 1**: Run `suconnect`.
+* **Session 2**: Run a `netcat` listener on the same port.
+
+---
+
+### Step 3 — Start the Netcat Listener
+
+3. In **Session 2**, start a netcat listener on port **4444**:
 
 ```bash
-   cat /tmp/t7O6lds9S0RqQh9aMcz6ShpAoZKF7fgv
+   nc -lvp 4444
 ```
 
-This reveals the password for **bandit22**.
+→ This waits for incoming connections.
 
-![Viewing cronjob\_bandit22, reading the script, and retrieving the password file from /tmp](Assets/level-21.png)
+---
 
+### Step 4 — Run suconnect
 
-### Final Step — Connect as bandit22
-
-5. Use the retrieved password to log in from your local machine:
+4. In **Session 1**, run `suconnect` with the same port:
 
 ```bash
-   ssh bandit22@bandit.labs.overthewire.org -p 2220
+   ./suconnect 4444
 ```
+
+→ This connects to the listener created in Session 2.
+
+---
+
+### Step 5 — Provide the Current Password
+
+5. In **Session 2** (netcat window), enter the password of **bandit20**.
+
+* `suconnect` verifies it.
+* If correct, it responds with the password for **bandit21**.
+
+---
+
+![Listing suconnect, running ./suconnect usage, netcat listener on port 4444, connection established, and password retrieved](Assets/level-20.png)
+
+
+### Final Step — Connect as bandit21
+
+6. With the new password, log in as **bandit21**:
+
+```bash
+   ssh bandit21@bandit.labs.overthewire.org -p 2220
+```
+
 
 ## **Outcome**
 
-* Enumerated cron jobs in `/etc/cron.d/`.
-* Found the scheduled script for **bandit22**.
-* Retrieved the password from the temporary file written by the cron job.
-* Logged into the server as **bandit22**.
+* Learned how to work with a **setuid binary** that connects over TCP.
+* Understood how to coordinate **two sessions** (`netcat` listener + `suconnect`).
+* Successfully retrieved the password for **bandit21**.
 
 ---
 
